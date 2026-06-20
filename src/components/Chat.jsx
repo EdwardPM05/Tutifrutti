@@ -9,15 +9,36 @@ export default function Chat({ salaId, miNombre }) {
   const [abierto, setAbierto] = useState(false);
   const [mensajes, setMensajes] = useState([]);
   const [texto, setTexto] = useState("");
+  const [toast, setToast] = useState(null);
   const finRef = useRef(null);
+  const yaCargado = useRef(false);
+  const toastTimeoutRef = useRef(null);
 
   useEffect(() => {
     const chatRef = query(ref(db, `salas/${salaId}/chat`), limitToLast(50));
     const unsub = onValue(chatRef, (snap) => {
       const data = snap.val() || {};
-      setMensajes(Object.values(data));
+      const lista = Object.values(data);
+      setMensajes(lista);
+
+      const ultimo = lista[lista.length - 1];
+      if (!ultimo) return;
+
+      // evita mostrar notificación de mensajes viejos al cargar la sala
+      if (!yaCargado.current) {
+        yaCargado.current = true;
+        return;
+      }
+
+      // evita notificarte tu propio mensaje
+      if (ultimo.nombre === miNombre) return;
+
+      setToast(ultimo);
+      clearTimeout(toastTimeoutRef.current);
+      toastTimeoutRef.current = setTimeout(() => setToast(null), 4000);
     });
     return () => unsub();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [salaId]);
 
   useEffect(() => {
@@ -34,8 +55,23 @@ export default function Chat({ salaId, miNombre }) {
     setTexto("");
   };
 
+  const abrirDesdeNotificacion = () => {
+    setToast(null);
+    setAbierto(true);
+  };
+
   return (
     <>
+      {toast && !abierto && (
+        <button
+          onClick={abrirDesdeNotificacion}
+          className="fixed bottom-20 right-4 max-w-xs bg-slate-800 border border-emerald-500 rounded-lg shadow-xl px-3 py-2 z-30 text-left animate-[slideIn_0.2s_ease-out]"
+        >
+          <div className="text-xs text-emerald-400 font-semibold">{toast.nombre}</div>
+          <div className="text-sm text-white truncate">{toast.texto}</div>
+        </button>
+      )}
+
       <button
         onClick={() => setAbierto(!abierto)}
         className="fixed bottom-4 right-4 w-12 h-12 rounded-full bg-emerald-500 text-white text-xl shadow-lg z-20"
