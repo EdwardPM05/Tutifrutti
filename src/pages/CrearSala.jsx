@@ -23,6 +23,8 @@ export default function CrearSala() {
   const [nombre, setNombre] = useState("");
   const [categorias, setCategorias] = useState(CATEGORIAS_DEFAULT);
   const [nuevaCategoria, setNuevaCategoria] = useState("");
+  const [conTiempo, setConTiempo] = useState(false);
+  const [segundos, setSegundos] = useState(60);
   const navigate = useNavigate();
 
   const agregarCategoria = () => {
@@ -47,6 +49,9 @@ export default function CrearSala() {
       ronda: 0,
       turnoActual: 0,
       letra: null,
+      letrasUsadas: [],
+      tiempoLimite: conTiempo ? segundos : null,
+      tiempoInicio: null,
       jugadoresOrden: [uid],
       jugadores: {
         [uid]: { nombre: nombre.trim(), conectado: true, puntajeTotal: 0 },
@@ -91,6 +96,28 @@ export default function CrearSala() {
           +
         </button>
       </div>
+
+      <div className="w-72 flex items-center justify-between mb-4 bg-slate-800 px-3 py-2 rounded-lg">
+        <span className="text-sm">Modo con tiempo</span>
+        <input
+          type="checkbox"
+          checked={conTiempo}
+          onChange={(e) => setConTiempo(e.target.checked)}
+          className="w-5 h-5"
+        />
+      </div>
+
+      {conTiempo && (
+        <div className="w-72 mb-4">
+          <label className="text-sm text-slate-400">Segundos por ronda</label>
+          <input
+            type="number"
+            value={segundos}
+            onChange={(e) => setSegundos(Number(e.target.value))}
+            className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-600"
+          />
+        </div>
+      )}
 
       <button
         onClick={crearSala}

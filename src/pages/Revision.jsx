@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ref, onValue, update } from "firebase/database";
 import { db } from "../firebase";
 import Marcador from "../components/Marcador";
-
+import Chat from "../components/Chat";
 function normalizar(str) {
   return (str || "").trim().toLowerCase();
 }
@@ -149,6 +149,8 @@ export default function Revision() {
         </button>
       )}
       {!soyHost && <p className="text-slate-500 text-sm">Esperando al host...</p>}
+      <Chat salaId={salaId} miNombre={sala.jugadores[miUid]?.nombre || "Yo"} />
     </div>
+    
   );
 }
