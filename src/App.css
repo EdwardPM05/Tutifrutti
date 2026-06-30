@@ -182,3 +182,7 @@
     border-right-color: var(--border);
   }
 }
+
+.drag-over {
+  background-color: #222;
+}

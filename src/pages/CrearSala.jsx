@@ -65,17 +65,15 @@ export default function CrearSala() {
   const handleDragStart = (event, index) => {
     event.dataTransfer.setData('text/plain', index);
     event.currentTarget.style.opacity = '0.5';
-    event.currentTarget.style.cursor = 'grabbing';
+    event.currentTarget.classList.add('drag-over');
   };
 
   const handleDragOver = (event) => {
     event.preventDefault();
-    event.target.style.backgroundColor = '#333';
   };
 
   const handleDragLeave = (event) => {
-    event.preventDefault();
-    event.target.style.backgroundColor = '#222';
+    event.target.classList.remove('drag-over');
   };
 
   const handleDrop = (event, index) => {
@@ -86,7 +84,7 @@ export default function CrearSala() {
       [newCategorias[sourceIndex], newCategorias[index]] = [newCategorias[index], newCategorias[sourceIndex]];
       setCategorias(newCategorias);
     }
-    event.target.style.backgroundColor = '#222';
+    event.target.classList.remove('drag-over');
   };
 
   return (
