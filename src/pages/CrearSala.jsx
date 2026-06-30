@@ -62,6 +62,33 @@ export default function CrearSala() {
     navigate(`/sala/${salaId}`);
   };
 
+  const handleDragStart = (event, index) => {
+    event.dataTransfer.setData('text/plain', index);
+    event.currentTarget.style.opacity = '0.5';
+    event.currentTarget.style.cursor = 'grabbing';
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+    event.target.style.backgroundColor = '#333';
+  };
+
+  const handleDragLeave = (event) => {
+    event.preventDefault();
+    event.target.style.backgroundColor = '#222';
+  };
+
+  const handleDrop = (event, index) => {
+    event.preventDefault();
+    const sourceIndex = parseInt(event.dataTransfer.getData('text/plain'), 10);
+    if (sourceIndex !== index) {
+      const newCategorias = [...categorias];
+      [newCategorias[sourceIndex], newCategorias[index]] = [newCategorias[index], newCategorias[sourceIndex]];
+      setCategorias(newCategorias);
+    }
+    event.target.style.backgroundColor = '#222';
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900 text-white px-4">
       <h1 className="text-3xl font-bold mb-6">Crear sala</h1>
@@ -76,7 +103,15 @@ export default function CrearSala() {
       <div className="w-72 mb-2 text-sm text-slate-400">Categorías</div>
       <div className="w-72 flex flex-col gap-2 mb-3">
         {categorias.map((cat, i) => (
-          <div key={i} className="flex justify-between items-center bg-slate-800 px-3 py-2 rounded-lg">
+          <div
+            key={i}
+            className="flex justify-between items-center bg-slate-800 px-3 py-2 rounded-lg"
+            draggable
+            onDragStart={(e) => handleDragStart(e, i)}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={(e) => handleDrop(e, i)}
+          >
             <span>{cat}</span>
             <button onClick={() => quitarCategoria(i)} className="text-red-400 text-sm">
               quitar
